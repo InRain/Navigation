@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Navigation</string>
+    <string name="please_provide_access_camera">We really need you to provide an access to your camera.</string>
+    <string name="pre_permission_request_dialog">To use camera feature yo need to provide an access to your camera</string>
+    <string name="OK">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="select_camera_type_to_open">Select camera type to open</string>
+    <string name="own_camera">Own camera</string>
+    <string name="another_camera_app">Another camera app</string>
 </resources>
