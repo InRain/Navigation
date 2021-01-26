@@ -1,6 +1,7 @@
 package ru.anfilek.navhomework
 
 import android.Manifest
+import android.Manifest.permission
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -33,21 +34,23 @@ class ListActivity : AppCompatActivity() {
     }
 
     private fun startCameraFeature() {
-
-        createDialogSelectCamera()
-
+        if(checkPermission(permission.CAMERA,android.os.Process.myPid(),android.os.Process.myUid()) == PackageManager.PERMISSION_GRANTED) {
+            createDialogSelectCamera()
+        }else{
+            showPreRequestCameraPermissionDialog()
+        }
     }
 
     private fun startItemActivity() {
-        val itemIntent = Intent(this,ItemActivity::class.java)
-        itemIntent.putExtra(SOME_RESOURCE_ID,"This is some resource from ListActivity")
+        val itemIntent = Intent(this, ItemActivity::class.java)
+        itemIntent.putExtra(SOME_RESOURCE_ID, "This is some resource from ListActivity")
         startActivity(itemIntent)
     }
 
 
     private fun requestCameraPermission() {
         ActivityCompat.requestPermissions(
-            this, arrayOf(Manifest.permission.CAMERA),
+            this, arrayOf(permission.CAMERA),
             REQUEST_PERMISSION_CAMERA
         )
     }
@@ -62,7 +65,7 @@ class ListActivity : AppCompatActivity() {
                 startCameraFeature()
             } else {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                    if (ContextCompat.checkSelfPermission(this, permission.CAMERA)
                         != PackageManager.PERMISSION_GRANTED
                     ) {
                         showMessageOnDeniedPermission(resources.getString(R.string.please_provide_access_camera),
@@ -95,40 +98,35 @@ class ListActivity : AppCompatActivity() {
             .setPositiveButton(
                 resources.getString(R.string.OK)
             ) { _, _ -> requestCameraPermission() }
-            .setNegativeButton(resources.getString(R.string.cancel)
+            .setNegativeButton(
+                resources.getString(R.string.cancel)
             ) { p0, _ -> p0?.dismiss() }
             .create()
             .show()
     }
 
-    private fun createDialogSelectCamera(){
+    private fun createDialogSelectCamera() {
         val cameraDialogBuilder = AlertDialog.Builder(this)
 
-        val view = layoutInflater.inflate(R.layout.dialog_camera_select,null)
-        val dialogBinding = DialogCameraSelectBinding.inflate(layoutInflater,
-            view as ViewGroup?, false)
+        val view = layoutInflater.inflate(R.layout.dialog_camera_select, null)
+        val dialogBinding = DialogCameraSelectBinding.inflate(
+            layoutInflater,
+            view as ViewGroup?, false
+        )
 
-        cameraDialogBuilder.setPositiveButton(resources.getString(R.string.OK)){_, _ ->
-            when{
-                dialogBinding.radioOwnCamera.isChecked ->{
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(
-                            this,
-                            Manifest.permission.CAMERA
-                        )
-                    ) {
-                        showPreRequestCameraPermissionDialog()
-                    } else {
-                        startActivity(Intent(this, CameraActivity::class.java))
-                    }
+        cameraDialogBuilder.setPositiveButton(resources.getString(R.string.OK)) { _, _ ->
+            when {
+                dialogBinding.radioOwnCamera.isChecked -> {
+                    startActivity(Intent(this, CameraActivity::class.java))
                 }
-                dialogBinding.radioExtCamera.isChecked ->{
+                dialogBinding.radioExtCamera.isChecked -> {
                     val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                     startActivity(takePictureIntent)
                 }
             }
 
         }
-        cameraDialogBuilder.setNegativeButton(resources.getString(R.string.cancel)){p0, _ -> p0.dismiss()}
+        cameraDialogBuilder.setNegativeButton(resources.getString(R.string.cancel)) { p0, _ -> p0.dismiss() }
 
 
         val dialog = cameraDialogBuilder.create()

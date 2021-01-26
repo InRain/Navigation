@@ -6,6 +6,7 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import ru.anfilek.navhomework.ListActivity.Companion.SOME_RESOURCE_ID
 import ru.anfilek.navhomework.databinding.ActivityItemBinding
+import kotlin.random.Random
 
 class ItemActivity : AppCompatActivity() {
 
@@ -30,8 +31,9 @@ class ItemActivity : AppCompatActivity() {
 
     private fun startMeAgain() {
         finish()
-        startActivity(intent)
-
+        val reopenIntent = intent
+        reopenIntent.putExtra(SOME_RESOURCE_ID, "Reopen ${Random.nextInt(100)}")
+        startActivity(reopenIntent)
     }
 
     private fun logout() {
